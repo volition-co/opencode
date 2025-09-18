@@ -73,7 +73,7 @@ for (const [os, arch] of targets) {
       2,
     ),
   )
-  if (!dry) await $`cd dist/${name} && chmod 777 -R . && bun publish --access public --tag ${npmTag}`
+  //if (!dry) await $`cd dist/${name} && chmod 777 -R . && bun publish --access public --tag ${npmTag}`
   optionalDependencies[name] = version
 }
 
@@ -99,7 +99,7 @@ await Bun.file(`./dist/${pkg.name}/package.json`).write(
     2,
   ),
 )
-if (!dry) await $`cd ./dist/${pkg.name} && bun publish --access public --tag ${npmTag}`
+//if (!dry) await $`cd ./dist/${pkg.name} && bun publish --access public --tag ${npmTag}`
 
 if (!snapshot) {
   for (const key of Object.keys(optionalDependencies)) {

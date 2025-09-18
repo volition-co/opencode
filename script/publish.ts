@@ -42,11 +42,11 @@ await $`bun install`
 console.log("\n=== opencode ===\n")
 await import(`../packages/opencode/script/publish.ts`)
 
-console.log("\n=== sdk ===\n")
-await import(`../packages/sdk/js/script/publish.ts`)
-
-console.log("\n=== plugin ===\n")
-await import(`../packages/plugin/script/publish.ts`)
+//console.log("\n=== sdk ===\n")
+//await import(`../packages/sdk/js/script/publish.ts`)
+//
+//console.log("\n=== plugin ===\n")
+//await import(`../packages/plugin/script/publish.ts`)
 
 const dir = new URL("..", import.meta.url).pathname
 process.chdir(dir)
