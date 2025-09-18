@@ -64,6 +64,12 @@ export const RunCommand = cmd({
         type: "string",
         describe: "agent to use",
       })
+      .option("output-format", {
+        type: "string",
+        choices: ["default", "jsonl"],
+        default: "default",
+        describe: "output format: default (formatted) or jsonl (raw JSON events)",
+      })
   },
   handler: async (args) => {
     let message = args.message.join(" ")
@@ -144,12 +150,28 @@ export const RunCommand = cmd({
         )
       }
 
+      function outputJsonEvent(type: string, data: any) {
+        if (args.outputFormat === "jsonl") {
+          const jsonEvent = {
+            type,
+            timestamp: Date.now(),
+            sessionID: session?.id,
+            ...data,
+          }
+          process.stdout.write(JSON.stringify(jsonEvent) + "\n")
+          return true
+        }
+        return false
+      }
+
       let text = ""
 
       Bus.subscribe(MessageV2.Event.PartUpdated, async (evt) => {
         if (evt.properties.part.sessionID !== session.id) return
         if (evt.properties.part.messageID === messageID) return
         const part = evt.properties.part
+
+        if (outputJsonEvent("tool_use", { part })) return
 
         if (part.type === "tool" && part.state.status === "completed") {
           const [tool, color] = TOOL[part.tool] ?? [part.tool, UI.Style.TEXT_INFO_BOLD]
@@ -169,6 +191,7 @@ export const RunCommand = cmd({
           text = part.text
 
           if (part.time?.end) {
+            if (outputJsonEvent("text", { part })) return
             UI.empty()
             UI.println(UI.markdown(text))
             UI.empty()
@@ -189,6 +212,7 @@ export const RunCommand = cmd({
         }
         errorMsg = errorMsg ? errorMsg + "\n" + err : err
 
+        if (outputJsonEvent("error", { error })) return
         UI.error(err)
       })
 
@@ -225,6 +249,7 @@ export const RunCommand = cmd({
       const isPiped = !process.stdout.isTTY
       if (isPiped) {
         const match = result.parts.findLast((x: any) => x.type === "text") as any
+        if (outputJsonEvent("text", { text: match })) return
         if (match) process.stdout.write(UI.markdown(match.text))
         if (errorMsg) process.stdout.write(errorMsg)
       }
