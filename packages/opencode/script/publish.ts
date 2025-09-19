@@ -41,12 +41,6 @@ await Bun.file(`./dist/${pkg.name}/package.json`).write(
     2,
   ),
 )
-if (!dry) {
-  for (const [name] of Object.entries(binaries)) {
-    await $`cd dist/${name} && chmod 777 -R . && bun publish --access public --tag ${npmTag}`
-  }
-  await $`cd ./dist/${pkg.name} && bun publish --access public --tag ${npmTag}`
-}
 
 if (!snapshot) {
   for (const key of Object.keys(binaries)) {
