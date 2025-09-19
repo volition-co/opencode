@@ -5,7 +5,7 @@ import { $ } from "bun"
 
 import pkg from "../package.json"
 
-const dry = process.env["OPENCODE_DRY"] === "true"
+//const dry = process.env["OPENCODE_DRY"] === "true"
 const version = process.env["OPENCODE_VERSION"]!
 const snapshot = process.env["OPENCODE_SNAPSHOT"] === "true"
 const npmTag = snapshot ? "snapshot" : "latest"
